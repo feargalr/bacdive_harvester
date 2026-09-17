@@ -1,0 +1,23 @@
+raw,canonical,rationale
+gelatin,gelatinase,Hydrolysis of gelatin is gelatinase activity; merges with the existing enzyme set.
+starch,amylase,Starch hydrolysis is amylase activity.
+urea,urease,Urea hydrolysis is urease activity.
+casein,caseinase,
+dna,DNase,
+arginine,arginine dihydrolase,"The API arginine-hydrolysis readout (ADH) is arginine dihydrolase."
+cellulose,cellulase,
+carboxymethylcellulose,cellulase,
+chitin,chitinase,
+tween 20,tween esterase,"Tween hydrolysis is esterase activity; the chain length is an assay detail."
+tween 40,tween esterase,
+tween 60,tween esterase,
+tween 80,tween esterase,
+tributyrin,lipase,Tributyrin is a standard lipase substrate.
+esculin,esculin hydrolysis,"Kept under its assay name: esculin hydrolysis reflects beta-glucosidase activity but is universally reported as its own test."
+hippurate,hippurate hydrolysis,
+xanthine,xanthine hydrolysis,
+hypoxanthine,hypoxanthine hydrolysis,
+tyrosine,tyrosine hydrolysis,
+L-tyrosine,tyrosine hydrolysis,
+esculin ferric citrate,esculin hydrolysis,"A medium ingredient name for the same assay; BacDive records the esculin test under several substrate spellings."
+esculin hydrolysate,esculin hydrolysis,As above.

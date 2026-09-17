@@ -1,0 +1,10 @@
+raw,canonical,match,rationale
+^quinones_MK-,menaquinone,regex,"Respiratory quinone chemistry. 101 MK-n variants collapse to one concept covering 1708 species; menaquinone vs ubiquinone is a genuine physiological distinction and only 8 species carry both."
+^quinones_Q-,ubiquinone,regex,"8 Q-n variants, 359 species. See above."
+^quinone Q-,ubiquinone,regex,Alternative singular spelling of the same field.
+aggregates in chains,aggregation in chains,exact,"Cell arrangement, 445 species. A comparable morphological property."
+arranged in chains,aggregation in chains,exact,
+aggregates in clumps,aggregation in clumps,exact,"247 species."
+aggregates in clusters,aggregation in clumps,exact,
+^(cells )?(usually )?occur singly$,no aggregation,regex,Cells occur singly rather than aggregating.
+^usually occur singly,no aggregation,regex,

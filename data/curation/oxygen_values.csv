@@ -1,0 +1,12 @@
+raw,canonical,priority,dominant,notes
+obligate anaerobe,anaerobe,1,no,
+strict anaerobe,anaerobe,1,no,
+anaerobe,anaerobe,2,no,
+anaerobe (but growth under aerobic conditions possible),anaerobe,2,no,
+aerotolerant,anaerobe,3,no,An aerotolerant organism is still an anaerobe.
+microaerophile,microaerophile,4,no,
+microaerotolerant,microaerophile,4,no,
+facultative anaerobe,facultative anaerobe,5,yes,"DOMINANT: facultative metabolism is a capability, so a strain grown only aerobically is recorded as ""aerobe"" and one grown only anaerobically as ""anaerobe"" -- neither negates the capability. Majority voting therefore called Citrobacter freundii (13 aerobe vs 3 facultative), Enterobacter cloacae (8 vs 7) and Serratia marcescens (23 vs 18) aerobes, though all three are Enterobacteriaceae and obligately facultative. Any report of facultative growth wins."
+facultative aerobe,facultative anaerobe,5,yes,Synonym of facultative anaerobe in BacDive usage.
+aerobe,aerobe,6,no,
+obligate aerobe,aerobe,7,no,

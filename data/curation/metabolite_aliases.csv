@@ -1,0 +1,52 @@
+raw,canonical,rationale
+D-glucose,glucose,"BacDive uses ""glucose"" and ""D-glucose"" for the same panel assay; v7 shipped them as two sets of 311 and 124 species."
+alpha-D-glucose,glucose,Stereo-specific spelling of the same assay; v7 shipped it as a singleton set.
+beta-D-glucose,glucose,"As above. Alias lookup is case-insensitive, so beta-d-glucose matches this row too."
+dextrose,glucose,Synonym.
+D-fructose,fructose,Only the D form is biologically tested in these panels.
+levulose,fructose,Synonym.
+D-mannose,mannose,"v7 shipped D-mannose (210) and mannose (79) separately."
+D-galactose,galactose,Only the D form is tested.
+D-maltose,maltose,
+D-trehalose,trehalose,
+D-cellobiose,cellobiose,
+D-melibiose,melibiose,
+D-raffinose,raffinose,
+D-sucrose,sucrose,
+saccharose,sucrose,Synonym.
+D-lactose,lactose,
+D-ribose,ribose,Only the D form is tested.
+D-mannitol,mannitol,Only the D form occurs.
+D-sorbitol,sorbitol,Only the D form occurs.
+D-glucitol,sorbitol,Synonym of D-sorbitol.
+myo-inositol,inositol,
+meso-inositol,inositol,
+N-acetylglucosamine,N-acetyl-D-glucosamine,Canonical to the fuller spelling.
+N-acetyl-glucosamine,N-acetyl-D-glucosamine,
+NAG,N-acetyl-D-glucosamine,
+L-rhamnose,rhamnose,Only the L form occurs naturally.
+D-glucuronate,glucuronate,
+glucuronic acid,glucuronate,Acid/conjugate-base spelling.
+galacturonic acid,galacturonate,
+gluconic acid,gluconate,
+D-gluconate,gluconate,
+acetic acid,acetate,
+lactic acid,lactate,"NB: DL-lactate is kept distinct below; this maps only the unqualified acid spelling."
+butyric acid,butyrate,
+propionic acid,propionate,
+succinic acid,succinate,
+fumaric acid,fumarate,
+formic acid,formate,
+pyruvic acid,pyruvate,
+citric acid,citrate,
+malic acid,malate,
+indol,indole,Spelling variant.
+urease substrate urea,urea,
+potassium nitrate,nitrate,
+NO3,nitrate,
+NO2,nitrite,
+hydrogen sulfide,H2S,
+hydrogen sulphide,H2S,
+H2S production,H2S,
+aesculin,esculin,British spelling.
+D-esculin,esculin,

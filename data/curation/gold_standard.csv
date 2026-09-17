@@ -1,0 +1,42 @@
+species,trait_set,expectation,source,notes
+Escherichia coli,BacDive_facultative anaerobe,present,Bergey's Manual,
+Escherichia coli,BacDive_Motility_yes,present,Bergey's Manual,
+Escherichia coli,BacDive_Gram_negative,present,Bergey's Manual,
+Escherichia coli,BacDive_Shape_rod,present,Bergey's Manual,
+Escherichia coli,BacDive_anaerobe,absent,Bergey's Manual,Must not be called a strict anaerobe.
+Bacteroides fragilis,BacDive_anaerobe,present,Bergey's Manual,
+Bacteroides fragilis,BacDive_Gram_negative,present,Bergey's Manual,
+Bacteroides fragilis,BacDive_Motility_no,present,Bergey's Manual,
+Bacteroides uniformis,BacDive_anaerobe,present,Bergey's Manual,"v7 shipped this species in BacDive_microaerophile; this assertion is the regression test for that bug."
+Bacteroides uniformis,BacDive_microaerophile,absent,Bergey's Manual,
+Faecalibacterium prausnitzii,BacDive_anaerobe,present,Duncan et al. 2002 IJSEM,"v7 could only supply this from the retired GPT table."
+Faecalibacterium prausnitzii,BacDive_Motility_no,present,Duncan et al. 2002 IJSEM,
+Akkermansia muciniphila,BacDive_anaerobe,present,Derrien et al. 2004 IJSEM,
+Akkermansia muciniphila,BacDive_Motility_no,present,Derrien et al. 2004 IJSEM,
+Bifidobacterium longum,BacDive_anaerobe,present,Bergey's Manual,
+Bifidobacterium longum,BacDive_Gram_positive,present,Bergey's Manual,
+Clostridioides difficile,BacDive_anaerobe,present,Bergey's Manual,
+Clostridioides difficile,BacDive_Spore_yes,present,Bergey's Manual,
+Clostridioides difficile,BacDive_Gram_positive,present,Bergey's Manual,
+Staphylococcus aureus,BacDive_facultative anaerobe,present,Bergey's Manual,
+Staphylococcus aureus,BacDive_Gram_positive,present,Bergey's Manual,
+Staphylococcus aureus,BacDive_Shape_coccus,present,Bergey's Manual,
+Staphylococcus aureus,BacDive_Enzyme_catalase,present,Bergey's Manual,Catalase distinguishes staphylococci from streptococci.
+Streptococcus pyogenes,BacDive_Enzyme_catalase,absent,Bergey's Manual,Streptococci are catalase-negative.
+Aeromonas hydrophila,BacDive_facultative anaerobe,present,Bergey's Manual,"v7's full run called this an anaerobe."
+Aeromonas hydrophila,BacDive_anaerobe,absent,Bergey's Manual,
+Aggregatibacter actinomycetemcomitans,BacDive_anaerobe,absent,Bergey's Manual,"Capnophilic facultative anaerobe; v7's full run called it an anaerobe."
+Pseudomonas aeruginosa,BacDive_aerobe,present,Bergey's Manual,
+Pseudomonas aeruginosa,BacDive_Motility_yes,present,Bergey's Manual,
+Veillonella parvula,BacDive_anaerobe,present,Bergey's Manual,
+Veillonella parvula,BacDive_Gram_negative,present,Bergey's Manual,
+Veillonella parvula,BacDive_Shape_ovoid,present,BacDive record,"DOCUMENTED DIVERGENCE: BacDive records V. parvula as oval-shaped, canonicalised to ovoid; the literature describes it as a Gram-negative anaerobic coccus. The expectation follows the source rather than overriding it, because maintaining species-level overrides would let the validation set define the database. The biologically meaningful check is the Shape_coccoid union below."
+Veillonella parvula,BacDive_Shape_coccoid,present,Bergey's Manual,Union of coccus and ovoid; this is the assertion that should hold regardless of which spelling BacDive used.
+Lactobacillus acidophilus,BacDive_Gram_positive,present,Bergey's Manual,
+Lactobacillus acidophilus,BacDive_Enzyme_catalase,absent,Bergey's Manual,Lactobacilli are catalase-negative.
+Roseburia intestinalis,BacDive_anaerobe,present,Duncan et al. 2002 IJSEM,
+Eubacterium rectale,BacDive_anaerobe,present,Bergey's Manual,Now Agathobacter rectalis; tests the synonym handling.
+Prevotella copri,BacDive_anaerobe,present,Hayashi et al. 2007 IJSEM,
+Ruminococcus bromii,BacDive_anaerobe,present,Bergey's Manual,
+Helicobacter pylori,BacDive_microaerophile,present,Bergey's Manual,A genuine microaerophile — the positive control for that set.
+Campylobacter jejuni,BacDive_microaerophile,present,Bergey's Manual,
