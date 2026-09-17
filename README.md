@@ -13,7 +13,8 @@ output is deterministic and the curation is reviewable.
 Only one package is required, and only for the harvest step:
 
 ```r
-install.packages("BacDive")     # the DSMZ API client
+## the DSMZ API client; it is on R-Forge, not CRAN
+install.packages("BacDive", repos = "https://R-Forge.R-project.org")
 ```
 
 `Matrix` is also used, but it ships with R.
@@ -23,7 +24,7 @@ Optional, each unlocking one extra step:
 | Package | Needed for | Without it |
 |---|---|---|
 | `curatedMetagenomicData` | building the target list from public metagenomes | supply your own species list |
-| `TaxSEA` | seeding the target list from `TaxSEA_db`; merging results back into it | both steps skipped |
+| `TaxSEA` | seeding the target list from `TaxSEA_db` | that source skipped |
 
 Everything else — flattening, aggregation, set building, validation, export — is
 base R.
@@ -63,20 +64,55 @@ The genus list is derived from it and nothing else is needed.
 03_aggregate.R        strains             -> output/03_species_traits.rds
 04_build_sets.R       trait calls         -> output/04_taxon_sets.rds
 05_validate.R         assertions, reports -> output/05_*.csv
-06_merge_taxsea_db.R  sets                -> output/TaxSEA_db.rda           [needs TaxSEA]
+06_merge_taxsea_db.R  sets                -> output/TaxSEA_db.rda, NCBI_ids.rda  [needs TaxSEA data]
 07_export_review.R    sets                -> output/review_*.tsv
 ```
 
 `01b_resolve_synonyms.R` is a second pass, not part of the main sequence. Run it
 after a first harvest to find target species missed because they were
-reclassified into a genus you did not query (it found 122 such genera in the
-reference build, including *Agathobacter*, *Enterocloster* and the *Lactobacillus*
-split). Merge its output into `data/target_genera.csv` and re-run the harvest,
-which skips genera already cached.
+reclassified into a genus you did not query (in the reference build it found
+*Agathobacter*, *Enterocloster*, *Mediterraneibacter*, *Phocaeicola* and the
+*Lactobacillus* split). Merge its output into `data/target_genera.csv` and re-run
+the harvest, which skips genera already cached. Repeat until it reports no new
+genera; the reference build needed two rounds.
+
+See `SET_FAMILIES.md` for what the sets are and why each family was kept, collapsed
+or dropped.
 
 Each stage reads the previous stage's cached artefact, so any subset can be
 re-run. `05_validate.R` exits non-zero if a gold-standard assertion fails, which
 makes it usable as a release gate.
+
+## Building TaxSEA's data files
+
+Stage 06 turns the sets into drop-in replacements for TaxSEA's `TaxSEA_db.rda` and
+`NCBI_ids.rda`. It never touches a package in place: it writes to `output/`, and
+copying the two files into TaxSEA's `data/` is a deliberate manual step.
+
+```bash
+TAXSEA_DATA_DIR=~/TaxSEA/data Rscript R/06_merge_taxsea_db.R
+```
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `TAXSEA_DATA_DIR` | installed TaxSEA | directory holding the current `TaxSEA_db.rda` and `NCBI_ids.rda` |
+| `TAXSEA_SHIP_MIN_MEMBERS` | `3` | smallest set shipped. TaxSEA intersects sets with the observed taxa before size-filtering, so a smaller set can never be tested |
+| `TAXSEA_HARVESTER_COMMIT` | `git rev-parse` | recorded in the build info |
+
+What it does:
+
+- replaces every `BacDive_*` set and keeps every other source unchanged, refusing
+  to run if a new name would collide with an existing one;
+- extends `NCBI_ids` with the species names behind the shipped sets, plus former
+  names resolved by `01b`, in both `Genus species` and `Genus_species` forms.
+  Binomials only. **An existing taxid is never overwritten**: a name that maps
+  today maps the same way afterwards, and disagreements are written to
+  `NCBI_ids_conflicts.tsv` instead. A name already present with no taxid is a dead
+  end in TaxSEA, so that is filled. In the reference build this took the share of
+  shipped taxa reachable by name from 15% to 96%;
+- writes `BacDive_set_provenance.tsv` (per set: family, evidence, strain and
+  species counts) and `BacDive_build_info.tsv` (harvester commit, BacDive client
+  version, harvest dates, counts) for the package to carry.
 
 ## Design decisions
 
@@ -139,7 +175,7 @@ The pipeline handles these; the details are documented in
 Rscript tests/run_tests.R
 ```
 
-67 assertions, base R only, no network. Runs stages 02–05 against a synthetic
+79 assertions, base R only, no network. Runs stages 02–06 against a synthetic
 cache built from real BacDive record shapes
 (`https://api.bacdive.dsmz.de/v2/example/fetch/24493`). Each assertion
 corresponds to a specific defect, so a regression fails loudly.
@@ -155,6 +191,9 @@ corresponds to a specific defect, so a regression fails loudly.
 | `output/review_sets_long.tsv` | full membership, one row per (set, taxon) |
 | `output/05_validation.csv` | gold-standard results: pass / fail / no_data / not_covered |
 | `output/05_redundant_sets.csv` | set pairs above Jaccard 0.9 — candidate unmerged synonyms |
+| `output/TaxSEA_db.rda`, `output/NCBI_ids.rda` | stage 06: TaxSEA's data files with the BacDive sets replaced |
+| `output/BacDive_set_provenance.tsv`, `output/BacDive_build_info.tsv` | stage 06: what shipped and how it was built |
+| `output/NCBI_ids_additions.tsv`, `output/NCBI_ids_conflicts.tsv` | stage 06: every name added or filled, and every disagreement left alone |
 
 ## Legacy
 

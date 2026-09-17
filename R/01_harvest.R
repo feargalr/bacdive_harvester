@@ -14,7 +14,9 @@
 source("R/00_config.R")
 
 if (!requireNamespace("BacDive", quietly = TRUE)) {
-  stop("the BacDive package is required: install.packages('BacDive')", call. = FALSE)
+  stop("the BacDive package is required. It is distributed on R-Forge, not CRAN:\n",
+       "  install.packages('BacDive', repos = 'https://R-Forge.R-project.org')",
+       call. = FALSE)
 }
 
 user <- Sys.getenv("BACDIVE_USER")

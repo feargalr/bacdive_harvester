@@ -50,6 +50,12 @@ load_trait_spec <- function() {
   ## everything except hydrolysis, `hydrolysis` takes only that.
   if (is.null(spec$context_include)) spec$context_include <- ""
   if (is.null(spec$context_exclude)) spec$context_exclude <- ""
+  ## A row whose fields have shifted still counts the right number of commas if
+  ## the shift is compensated elsewhere, so check the flag's value, not just the
+  ## shape: an unquoted comma once turned `enabled` into "yes DROPPED: ...".
+  bad_flag <- !tolower(spec$enabled) %in% c("yes", "no", "true", "false", "1", "0")
+  if (any(bad_flag)) stop("trait_spec.csv: `enabled` must be yes/no; check quoting in: ",
+                          paste(spec$family[bad_flag], collapse = ", "), call. = FALSE)
   spec <- spec[tolower(spec$enabled) %in% c("yes", "true", "1"), , drop = FALSE]
   ok_kinds <- c("categorical", "assay", "panel", "label", "typed_label", "numeric")
   badk <- setdiff(unique(spec$kind), ok_kinds)
@@ -268,11 +274,20 @@ apply_id_bridge <- function(analyte, id, bridge) {
 ## Names must keep the BacDive prefix: TaxSEA finds and replaces this family with
 ## grepl("BacDive", names(TaxSEA_db)). Predicted traits get a Pred infix so a
 ## user can exclude them.
+##
+## Whitespace becomes "_", matching the other TaxSEA_db sources (e.g.
+## GutMGene_producers_of_...). The analyte label itself keeps its spaces in the
+## trait table and review exports; only the set identifier is normalised.
 make_set_name <- function(infix, label, predicted = FALSE, polarity = NULL) {
   parts <- c(PIPE$set_prefix,
              if (predicted) PIPE$predicted_infix else NULL,
              if (!is.na(infix) && nzchar(infix)) infix else NULL,
              label,
              if (!is.null(polarity) && nzchar(polarity)) polarity else NULL)
-  paste(parts[nzchar(parts) & !is.na(parts)], collapse = "_")
+  x <- paste(parts[nzchar(parts) & !is.na(parts)], collapse = "_")
+  ## BacDive writes chemical locants with a space ("1, 2-propandiol"); close
+  ## them up, and make any other comma-space a separator ("yes, in single cases").
+  x <- gsub("([0-9]),[[:space:]]+([0-9])", "\\1,\\2", x)
+  x <- gsub(",[[:space:]]+", "_", x)
+  gsub("[[:space:]]+", "_", x)
 }

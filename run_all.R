@@ -25,8 +25,10 @@ stages <- c(
   "R/04_build_sets.R",
   "R/05_validate.R",
   "R/07_export_review.R",
-  ## Last, and only if TaxSEA is installed: everything above is standalone.
-  if (requireNamespace("TaxSEA", quietly = TRUE)) "R/06_merge_taxsea_db.R"
+  ## Last, and only when there is a TaxSEA database to merge into: either
+  ## TAXSEA_DATA_DIR points at one, or TaxSEA is installed.
+  if (nzchar(Sys.getenv("TAXSEA_DATA_DIR")) ||
+      requireNamespace("TaxSEA", quietly = TRUE)) "R/06_merge_taxsea_db.R"
 )
 
 for (s in stages) {
