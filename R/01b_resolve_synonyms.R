@@ -106,7 +106,17 @@ target <- utils::read.csv(file.path("data", "target_species.csv"),
                           stringsAsFactors = FALSE)$species
 meta <- readRDS(PIPE$strain_meta)
 found <- unique(meta$species)
-harvested_genera <- unique(sub(" .*$", "", found))
+## Genera actually QUERIED, from the harvest manifest -- not the genera that
+## appear in record species names. BacDive's taxon search also matches synonyms,
+## so a query for one genus can return a few records already filed under another
+## (e.g. a Phocaeicola species arriving via Bacteroides). Deriving this from
+## record names made Phocaeicola look harvested, so it was never queried and
+## P. vulgatus and P. dorei were silently missing.
+harvested_genera <- if (file.exists(PIPE$manifest_file)) {
+  utils::read.csv(PIPE$manifest_file, stringsAsFactors = FALSE)$genus
+} else {
+  sub("[.]rds$", "", list.files(PIPE$cache_dir, pattern = "[.]rds$"))
+}
 missing <- sort(setdiff(target, found))
 
 log_msg(sprintf("%d target species, %d found, %d missing", length(target),

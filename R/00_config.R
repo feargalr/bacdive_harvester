@@ -49,6 +49,12 @@ PIPE <- list(
   ## delete small well-defined traits rather than near-universal ones.
   min_universe_for_filter = 10L,
 
+  ## Stage 06 ships only sets with at least this many members. TaxSEA intersects
+  ## each set with the observed taxa before size-filtering, so a smaller set can
+  ## never reach a min_set_size of this value. Override with
+  ## TAXSEA_SHIP_MIN_MEMBERS.
+  ship_min_members = 3L,
+
   ## Set naming. The BacDive_ prefix must be retained: TaxSEA identifies and
   ## replaces this family with grepl("BacDive", names(TaxSEA_db)).
   set_prefix        = "BacDive",

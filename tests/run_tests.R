@@ -98,7 +98,7 @@ ok("...and neither raw spelling survives",
    !any(c("D-glucose", "alpha-D-glucose") %in% traits$analyte))
 eq("...with support from both strains", gu$n_pos[gu$analyte == "glucose"], 2L)
 ok("Esterase Lipase (API zym) merged with esterase lipase (C 8) (enzymes)",
-   length(grep("esterase lipase", names(sets), ignore.case = TRUE)) == 1L)
+   length(grep("esterase_lipase", names(sets), ignore.case = TRUE)) == 1L)
 ok("oxidase variants would collapse to one canonical name",
    !any(c("oxidase", "cytochrome-c oxidase") %in% traits$analyte))
 
@@ -123,10 +123,10 @@ ako2 <- tr("Akkermansia muciniphila", "oxygen")
 eq("a multi-entry oxygen block yields both a measured and a predicted call",
    sort(ako2$predicted), c(FALSE, TRUE))
 ok("the predicted oxygen call gets its own Pred_ set",
-   "BacDive_Pred_anaerobe" %in% names(sets) &&
-     "239935" %in% members("BacDive_Pred_anaerobe"))
+   "BacDive_Pred_Oxygen_anaerobe" %in% names(sets) &&
+     "239935" %in% members("BacDive_Pred_Oxygen_anaerobe"))
 ok("the measured oxygen call still reaches the measured set",
-   "239935" %in% members("BacDive_anaerobe"))
+   "239935" %in% members("BacDive_Oxygen_anaerobe"))
 aksp <- tr("Akkermansia muciniphila", "spore")
 ok("a prediction-only trait is flagged predicted", all(aksp$predicted))
 ok("...and never leaks into the measured set",
@@ -140,12 +140,12 @@ ok("no set contains a duplicated taxid",
    !any(vapply(sets, function(x) anyDuplicated(x) > 0L, logical(1))))
 ok("no set is empty", all(vapply(sets, length, integer(1)) > 0L))
 ok("oxygen categories are separate sets, not one 'oxygen_tolerance' bucket",
-   all(c("BacDive_anaerobe", "BacDive_facultative anaerobe") %in% names(sets)) &&
+   all(c("BacDive_Oxygen_anaerobe", "BacDive_Oxygen_facultative_anaerobe") %in% names(sets)) &&
      !("BacDive_oxygen_tolerance" %in% names(sets)))
 ok("gram polarities are separate sets",
    !("BacDive_gram_stain" %in% names(sets)))
-eq("B. uniformis (820) is in BacDive_anaerobe", "820" %in% members("BacDive_anaerobe"), TRUE)
-eq("E. coli (562) is NOT in BacDive_anaerobe", "562" %in% members("BacDive_anaerobe"), FALSE)
+eq("B. uniformis (820) is in BacDive_Oxygen_anaerobe", "820" %in% members("BacDive_Oxygen_anaerobe"), TRUE)
+eq("E. coli (562) is NOT in BacDive_Oxygen_anaerobe", "562" %in% members("BacDive_Oxygen_anaerobe"), FALSE)
 
 cat("\n== context collapse and information filter ==\n")
 ok("growth/assimilation/degradation collapse into the base Uses set",
@@ -160,8 +160,18 @@ ok("categorical polarity sets survive the information filter",
    all(c("BacDive_Motility_no", "BacDive_Motility_yes", "BacDive_Spore_no")
        %in% names(sets)))
 
+cat("\n== set naming ==\n")
+ok("set names contain no whitespace", !any(grepl("[[:space:]]", names(sets))))
+ok("oxygen sets carry the Oxygen family label",
+   all(c("BacDive_Oxygen_anaerobe", "BacDive_Oxygen_facultative_anaerobe") %in% names(sets)) &&
+     !any(grepl("^BacDive_(anaerobe|aerobe|microaerophile|facultative)", names(sets))))
+
 cat("\n== curation files ==\n")
 source("R/lib/normalise.R")
+ok("chemical locants are closed up and other comma-spaces become separators",
+   identical(make_set_name("Uses", "1, 2-propandiol"), "BacDive_Uses_1,2-propandiol") &&
+     identical(make_set_name("PathogenHuman", "yes, in single cases"),
+               "BacDive_PathogenHuman_yes_in_single_cases"))
 cur <- list.files(PIPE$curation_dir, pattern = "[.]csv$", full.names = TRUE)
 for (f in cur) {
   ok(sprintf("%s is rectangular", basename(f)),
@@ -173,6 +183,44 @@ ok("oxygen priority ranks anaerobe above microaerophile", {
   min(m$priority[m$canonical == "anaerobe"]) < min(m$priority[m$canonical == "microaerophile"])
 })
 
+cat("\n== stage 06: TaxSEA data build, without TaxSEA installed ==\n")
+## A miniature TaxSEA data directory: one unrelated source set, one stale BacDive
+## set to be replaced, and a name lookup holding one agreeing entry and one
+## deliberately conflicting entry.
+tdir <- file.path(tempdir(), "taxsea_data"); dir.create(tdir, showWarnings = FALSE)
+TaxSEA_db <- list(GutMGene_producers_of_X = c("820", "562"),
+                  BacDive_Utilizes_nitrate = c("562"))
+NCBI_ids <- list("Escherichia coli" = "562", "Bacteroides uniformis" = "999999",
+                 "Faecalibacterium_prausnitzii" = NULL)
+save(TaxSEA_db, file = file.path(tdir, "TaxSEA_db.rda"))
+save(NCBI_ids, file = file.path(tdir, "NCBI_ids.rda"))
+Sys.setenv(TAXSEA_DATA_DIR = tdir, TAXSEA_SHIP_MIN_MEMBERS = "1",
+           TAXSEA_HARVESTER_COMMIT = "test")
+run_stage("R/06_merge_taxsea_db.R")
+e6 <- new.env()
+load(file.path(out, "TaxSEA_db.rda"), envir = e6); load(file.path(out, "NCBI_ids.rda"), envir = e6)
+ok("non-BacDive sets are kept", "GutMGene_producers_of_X" %in% names(e6$TaxSEA_db))
+ok("stale BacDive sets are removed", !("BacDive_Utilizes_nitrate" %in% names(e6$TaxSEA_db)))
+ok("new BacDive sets are added", "BacDive_Oxygen_anaerobe" %in% names(e6$TaxSEA_db))
+ok("NCBI_ids gains harvested names in both spellings",
+   all(c("Faecalibacterium prausnitzii", "Faecalibacterium_prausnitzii") %in% names(e6$NCBI_ids)))
+ok("each shipped taxid is added as its own name, for users who supply taxids",
+   identical(e6$NCBI_ids[["853"]], "853"))
+ok("an existing name with no taxid is filled",
+   identical(e6$NCBI_ids[["Faecalibacterium_prausnitzii"]], "853") &&
+     sum(names(e6$NCBI_ids) == "Faecalibacterium_prausnitzii") == 1L)
+ok("an existing NCBI_ids entry is never overwritten",
+   identical(e6$NCBI_ids[["Bacteroides uniformis"]], "999999"))
+ad <- utils::read.delim(file.path(out, "NCBI_ids_additions.tsv"), stringsAsFactors = FALSE)
+ok("only binomials and taxids are added (no 'sp.', no subspecies)",
+   nrow(ad) > 0L && all(grepl("^([A-Z][a-z]+[ _][a-z][a-z-]+|[0-9]+)$", ad$name)))
+cf <- utils::read.delim(file.path(out, "NCBI_ids_conflicts.tsv"), stringsAsFactors = FALSE)
+ok("...and the disagreement is reported", "Bacteroides uniformis" %in% cf$name)
+bi <- utils::read.delim(file.path(out, "BacDive_build_info.tsv"), stringsAsFactors = FALSE)
+ok("a build record is written", identical(bi$value[bi$key == "harvester_commit"], "test"))
+TaxSEA_db <- NULL; NCBI_ids <- NULL
+Sys.unsetenv(c("TAXSEA_DATA_DIR", "TAXSEA_SHIP_MIN_MEMBERS", "TAXSEA_HARVESTER_COMMIT"))
+
 cat("\n== validation stage ==\n")
 vres <- run_stage("R/05_validate.R")
 ok("validation stage produced a report", file.exists(file.path(out, "05_validation.csv")))
@@ -182,10 +230,10 @@ ok("gold standard distinguishes not_covered from fail",
    "not_covered" %in% gs$status)
 ok("B. uniformis anaerobe assertion passes (the regression test for the v7 bug)",
    gs$status[gs$species == "Bacteroides uniformis" &
-               gs$trait_set == "BacDive_anaerobe"] == "pass")
+               gs$trait_set == "BacDive_Oxygen_anaerobe"] == "pass")
 ok("B. uniformis microaerophile assertion passes (absent as expected)",
    gs$status[gs$species == "Bacteroides uniformis" &
-               gs$trait_set == "BacDive_microaerophile"] == "pass")
+               gs$trait_set == "BacDive_Oxygen_microaerophile"] == "pass")
 
 cat(sprintf("\n%d passed, %d failed\n", PASS, FAIL))
 if (FAIL) {

@@ -81,6 +81,17 @@ name_sets <- function(traits, spec) {
                   predicted = traits$predicted[i],
                   polarity = suffix[i])
   }, character(1))
+
+  ## Normalising whitespace could in principle map two different traits (e.g.
+  ## "a b" and "a_b") onto one name, which split() would then silently merge.
+  identity <- paste(traits$set_infix, traits$analyte, traits$context,
+                    traits$call, traits$predicted, sep = "\r")
+  per_name <- tapply(identity, traits$set_name, function(z) length(unique(z)))
+  clash <- names(per_name)[per_name > 1L]
+  if (length(clash)) {
+    stop("set name collision after normalisation: ",
+         paste(utils::head(clash, 5), collapse = ", "), call. = FALSE)
+  }
   traits
 }
 

@@ -1,7 +1,9 @@
 # What the BacDive sets are
 
-Reference build: **3,165 sets · 8,587 taxa · 25 trait families**, from a
-592-genus / 75,062-strain harvest of ~73% of BacDive's 102,187 strains.
+Reference build: **3,199 sets · 9,045 taxa · 24 enabled trait families**, from a
+705-genus / 76,452-strain harvest (about three quarters of BacDive's strains).
+**1,776** of those sets have at least 3 members and are what stage 06 ships to
+TaxSEA.
 
 Your own numbers will differ with the genus list and the BacDive release. The
 counts quoted throughout this document come from that reference build and are
@@ -21,10 +23,10 @@ Two cases follow from it, treated differently:
 
 | | Example | Action |
 |---|---|---|
-| **Comparable but sparsely measured** | `Util_turanose` — a real assay few species were tested for | **Keep.** TaxSEA intersects sets with the observed taxa *before* size-filtering, so sparse sets never reach testing and cost nothing. They may become useful as BacDive grows. |
+| **Comparable but sparsely measured** | `Uses_turanose` — a real assay few species were tested for | **Keep.** TaxSEA intersects sets with the observed taxa *before* size-filtering, so sparse sets never reach testing and cost nothing. They may become useful as BacDive grows. |
 | **Not comparable at all** | `antibiotic A-195`; `Ability for Yeast lysis` (1,207 strain records but only 6 species); a polar-lipid prose fragment | **Drop, or salvage a curated subset via a semantic allowlist.** No amount of data makes these comparable across taxa. |
 
-**28 families are disabled** on this principle, each with its rationale recorded in
+**29 families are disabled** on this principle, each with its rationale recorded in
 `data/curation/trait_spec.csv`:
 
 - laboratory-risk classification — `biosafety` (BSL_1 alone had 5,476 members)
@@ -40,26 +42,33 @@ Two cases follow from it, treated differently:
 
 | File | One row per | Use it to |
 |---|---|---|
-| `review_sets_summary.tsv` | set (5,268) | triage: fill in `keep`, `merge_into`, `notes` |
-| `review_analytes.tsv` | analyte (3,570) | spot unmerged synonyms: fill in `canonical_name` |
-| `review_sets_long.tsv.gz` | (set, taxon), 479k rows | check actual membership |
-| `08_sets_reaching_testing.tsv` | the **389** sets that actually get tested on an IBD dataset | **curate this first** — the other ~4,900 cost nothing |
+| `review_sets_summary.tsv` | set (3,199) | triage: fill in `keep`, `merge_into`, `notes` |
+| `review_analytes.tsv` | analyte (2,233) | spot unmerged synonyms: fill in `canonical_name` |
+| `review_sets_long.tsv.gz` | (set, taxon), 449,769 rows | check actual membership |
+| `05_redundant_sets.csv` | set pair with Jaccard ≥ 0.9 (41) | candidate unmerged synonyms |
 
 ## Reading a set name
 
+Names are `BacDive_<Family>_<value>[_<context>][_negative]` and contain no spaces:
+whitespace becomes `_`, and the comma-space BacDive writes in chemical locants is
+closed up (`1, 2-propandiol` → `1,2-propandiol`).
+
 ```
-BacDive_Util_glucose                positive: species utilise glucose
-BacDive_Util_glucose_negative       tested and did NOT utilise it
-BacDive_Util_nitrate_gas            context suffix: "builds gas from" nitrate
-BacDive_Enzyme_catalase             positive enzyme activity
-BacDive_Temp_thermophile            derived from a numeric field
-BacDive_Shape_coccoid               a derived union of coccus and ovoid
-BacDive_Pred_*                      genome-based prediction (none in this build)
+BacDive_Oxygen_facultative_anaerobe  a categorical call
+BacDive_Uses_glucose                 grows on / utilises glucose
+BacDive_Uses_glucose_negative        tested and did NOT utilise it
+BacDive_Uses_glucose_fermentation    context suffix: ferments glucose
+BacDive_Uses_nitrate_reduction       context suffix: reduces nitrate
+BacDive_Enzyme_catalase              positive enzyme activity
+BacDive_Enzyme_esculin_hydrolysis    hydrolysis assays live with enzymes
+BacDive_Temp_thermophile             derived from a numeric field
+BacDive_Shape_coccoid                a derived union of coccus and ovoid
+BacDive_Pred_*                       genome-based prediction (none in this build)
 ```
 
-**2,444 sets are `_negative`.** v7 could not express these: it recorded only `+`
-results, so "tested and negative" was indistinguishable from "never tested". The
-`n_species_tested` column gives you the denominator.
+**1,372 sets are `_negative`.** The original scraper could not express these: it
+recorded only `+` results, so "tested and negative" was indistinguishable from
+"never tested". The `n_species_tested` column gives you the denominator.
 
 ## The families
 
@@ -67,13 +76,13 @@ results, so "tested and negative" was indistinguishable from "never tested". The
 
 | Family | Sets | Largest | Notes |
 |---|---|---|---|
-| `oxygen` | 4 | 3,095 | aerobe 3,173 · anaerobe 1,260 · facultative anaerobe 973 · microaerophile 639. Resolved as a **capability**, not a majority vote: `facultative anaerobe` is flagged `dominant`, because a facultative organism grown only aerobically is recorded "aerobe". Without that, *Citrobacter freundii*, *Enterobacter cloacae* and *Serratia marcescens* all came out aerobic. Dominance needs ≥10% of strains and ≥2 strains, or one stray annotation flips a species (*P. aeruginosa* became facultative on 1 of 142). |
-| `gram` | 3 | 2,797 | positive / negative / variable |
-| `motility` | 2 | 3,040 | yes / no. v7 shipped only `yes`, discarding 399 `no` calls. |
-| `spore` | 2 | 1,649 | yes / no. Absent from v7 entirely. |
-| `shape` | 12 | 3,925 | rod 3,925 · coccus 641 · ovoid 274 · filament · spiral · curved … |
-| `shape_union` | 1 | 914 | **`Shape_coccoid` = coccus ∪ ovoid.** The constituents stay separate: `ovoid` carries real information (it is largely *Acinetobacter*, which are coccobacilli, not cocci), so collapsing them would misclassify more than it fixes. The union gives the broader category that is usually the biological question, without destroying the source distinction. |
-| `pathogen_human` | 2 | 395 | documented human pathogenicity |
+| `oxygen` | 4 | 3,213 | aerobe 3,213 · anaerobe 1,317 · facultative anaerobe 962 · microaerophile 628. Resolved as a **capability**, not a majority vote: `facultative anaerobe` is flagged `dominant`, because a facultative organism grown only aerobically is recorded "aerobe". Without that, *Citrobacter freundii*, *Enterobacter cloacae* and *Serratia marcescens* all came out aerobic. Dominance needs ≥10% of strains and ≥2 strains, or one stray annotation flips a species (*P. aeruginosa* became facultative on 1 of 142). |
+| `gram` | 3 | 2,936 | positive / negative / variable |
+| `motility` | 2 | 3,204 | yes / no. The original scraper shipped only `yes`. |
+| `spore` | 2 | 1,755 | yes / no |
+| `shape` | 12 | 4,168 | rod 4,168 · coccus 658 · ovoid 287 · filament 29 · curved 24 · spiral 22 … |
+| `shape_union` | 1 | 944 | **`Shape_coccoid` = coccus ∪ ovoid.** The constituents stay separate: `ovoid` carries real information (it is largely *Acinetobacter*, which are coccobacilli, not cocci), so collapsing them would misclassify more than it fixes. The union gives the broader category that is usually the biological question, without destroying the source distinction. |
+| `pathogen_human` | 2 | 408 | documented human pathogenicity: `yes` 183 · `yes_in_single_cases` 408 |
 
 ### Derived numeric traits — semi-structured text turned into biology
 
@@ -87,77 +96,97 @@ maximum.
 
 | Family | Sets | Raw distinct values | Result |
 |---|---|---|---|
-| `culture_temp` | 8 | 767, over 189k rows — the largest field in BacDive | mesophile 7,835 · thermophile 1,017 · psychrophile 76 · hyperthermophile 18 · thresholds ≥45/55/65/80 °C |
-| `culture_temp_min` | 1 | — | psychrotolerant 975 |
-| `halophily` | 10 | **633** (`0-2 %`, `0-2.0 %`, `0-2 %(w/v)`, `02-03 %`, `0-1.1 M`, `5-150 g/L` …) | Kushner classes + thresholds ≥2/5/10/15/20% NaCl. All 633 parse; M converted at 58.44 g/mol, g/L at ÷10. NaCl only — marine salts, MgCl₂ and KCl are different physiology and far too sparse. |
-| `culture_ph_max` / `_min` | 4 | 456 | alkaliphile 1,477 · acidophile 875 · thresholds ≥pH 9/10 |
-| `gc_content` | 3 | 1,268 | GC_low <40% 1,202 · GC_mid 2,036 · GC_high >60% 3,055 |
+| `culture_temp` | 8 | 767, over 189k rows — the largest field in BacDive | mesophile 7,829 · thermophile 1,017 · psychrophile 75 · hyperthermophile 18 · thresholds ≥45/55/65/80 °C |
+| `culture_temp_min` | 1 | — | psychrotolerant 1,011 |
+| `halophily` | 10 | **633** (`0-2 %`, `0-2.0 %`, `0-2 %(w/v)`, `02-03 %`, `0-1.1 M`, `5-150 g/L` …) | Kushner classes (non-halophile 531 · halotolerant 1,223 · slight 1,229 · moderate 580 · extreme 97) + thresholds ≥2/5/10/15/20% NaCl. All 633 parse; M converted at 58.44 g/mol, g/L at ÷10. NaCl only — marine salts, MgCl₂ and KCl are different physiology and far too sparse. |
+| `culture_ph_max` / `_min` | 4 | 456 | alkaliphile 1,693 · acidophile 955 · thresholds ≥pH 9/10 |
+| `gc_content` | 3 | 1,268 | GC_low <40% 1,245 · GC_mid 2,124 · GC_high >60% 3,087 |
 
 ### Metabolism — the bulk
 
-| Family | Sets | Largest | Notes |
-|---|---|---|---|
-| `util` | 4,457 | 2,601 | metabolite utilisation. Median 3 taxa: a long sparse tail that is *comparable but rarely measured*, so it is kept and simply never reaches testing. |
-| `enzyme` | 191 | 3,697 | enzyme activities |
-| `api_zym` | 38 | 3,877 | the one API panel using real analyte names; merged into the `Enzyme` family |
-| `production` | 398 | 3,790 | metabolites **produced**, not consumed — butyrate, propionate, acetate, lactate, indole, H₂S. The family that speaks most directly to metabolomics. |
-| `metabolite_test` | 8 | 2,172 | Voges-Proskauer, methyl red, indole, citrate |
+| Family | Prefix | Sets | Shipped (≥3) | Largest | Notes |
+|---|---|---|---|---|---|
+| `util` | `Uses_` | 2,185 | 1,348 | 2,938 | substrate use, by assay context (below). Median 5 taxa: a long sparse tail that is *comparable but rarely measured*, kept and simply never reaching testing. |
+| `enzyme`, `api_zym`, `hydrolysis` | `Enzyme_` | 437 | 240 | 3,828 | enzyme activities. `API zym` is the one API panel using real analyte names and merges into this family; hydrolysis assays (esculin 2,086, hippurate 612 …) are enzyme activities and live here, not under `Uses_`. |
+| `production` | `Prod_` | 392 | 53 | 3,980 | metabolites **produced**, not consumed — indole, H₂S, acetoin, nitrite |
+| `metabolite_test` | `Test_` | 8 | 8 | 2,274 | Voges-Proskauer, methyl red, indole, citrate |
 
-Synonym work in `util`/`enzyme`, all of which v7 shipped as split sets:
-`D-glucose` + `glucose` + `alpha-D-glucose` → one set (v7: 311/124/1);
-`esterase lipase (C 8)` + `esterase Lipase (C 8)` + `Esterase Lipase` → one, merged
-across the `enzymes` subsection *and* the `API zym` panel; `oxidase` +
-`cytochrome oxidase` + `cytochrome-c oxidase` → one. D/L enantiomers are **kept
-distinct** where both are genuinely assayed (arabinose, xylose, arabitol, lactate,
-malate, tartrate). A `family` of `api_zym|enzyme` in the summary sheet is the
-cross-family merge working.
+**Substrate context is collapsed, not discarded.** BacDive records the same
+substrate under many assay descriptions ("builds acid from", "energy source",
+"carbon source", …). These are collapsed to a small set of biologically distinct
+contexts, and the raw description is preserved underneath in `context_raw`:
 
-Assay *context* is preserved, so `Util_nitrate_gas` ("builds gas from nitrate") is
-no longer folded into nitrate utilisation as it was in v7's 219-member
+| Suffix | Meaning | Largest sets |
+|---|---|---|
+| *(none)* | growth on / utilisation of the substrate | glucose 2,938 · mannose 1,706 · maltose 1,680 |
+| `_fermentation` | ferments it — kept separate from acid production | glucose 889 · sucrose 573 · mannitol 383 |
+| `_acid` | builds acid from it | glucose 1,568 · maltose 1,323 · fructose 1,281 |
+| `_gas` | builds gas from it | thiosulfate 54 · nitrite 20 · nitrate 11 |
+| `_reduction` | reduces it | **nitrate 2,198** · nitrite 268 |
+| `_respiration` | used in respiration | nitrate 517 |
+| `_Nsource` | used as a nitrogen source — kept separate | L-asparagine 56 · L-arginine 54 |
+
+Nitrate is the clearest case of why context matters: reducing nitrate (2,198
+species), respiring it (517) and building gas from it (11) are different
+physiology, and the original scraper merged them into one 219-member
 `Utilizes_nitrate`.
+
+Synonym work, all of which the original scraper shipped as split sets:
+`D-glucose` + `glucose` + `alpha-D-glucose` → one set;
+`esterase lipase (C 8)` + `esterase Lipase (C 8)` + `Esterase Lipase` → one
+(`Enzyme_esterase_lipase`), merged across the `enzymes` subsection *and* the
+`API zym` panel; `oxidase` + `cytochrome oxidase` + `cytochrome-c oxidase` → one.
+D/L enantiomers are **kept distinct** where both are genuinely assayed (arabinose,
+xylose, arabitol, lactate, malate, tartrate). A `family` of `api_zym|enzyme` in the
+summary sheet is the cross-family merge working.
 
 ### Allowlisted families — salvaged subsets
 
-| Family | Sets | What survived |
-|---|---|---|
-| `observation` | 5 | From 1,502 analytes (85% single-species). Kept: **menaquinone 1,670** and **ubiquinone 367** (101 MK-n and 8 Q-n variants collapsed; only 8 species carry both, so it is a real dichotomy in respiratory chemistry), and cell aggregation — chains 436 · clumps 245 · none 11. Discarded: polar-lipid profiles (172 analytes over 143 species, 64 of them prose fragments), yeast/*E. coli* lysis (1,207 strain records but 6 species), one-off observations. |
-| `compound_class` | 14 | From 1,887 raw analytes. steroid transformation 15 · siderophore 12 · antibiotic (unspecified) 11 · polyhydroxyalkanoate 11 · ethanol 9 · pigment 8 · vitamin B12 8 · carotenoid 7 · bacteriocin 6 · biosurfactant 3 · butanediol 3 · exopolysaccharide 3 · propanediol 2 · methanol 1. **Acetoin deliberately excluded** — it duplicates `Test_voges-proskauer-test`. Enzyme-like entries needed no rehoming: β-lactamase, amylase, catalase, urease, protease, nitrate reductase, cellulase, chitinase and lipase were already in `enzyme`. |
-| `tolerance` | 3 | lysozyme 30 · tellurite 8 · bile 4. From 27 analytes, 70% single-species heavy metals and selective agents. |
+| Family | Prefix | Sets | What survived |
+|---|---|---|---|
+| `observation` | `Observation_` | 5 | From 1,502 analytes (85% single-species). Kept: **menaquinone 1,698** and **ubiquinone 382** (101 MK-n and 8 Q-n variants collapsed; very few species carry both, so it is a real dichotomy in respiratory chemistry), and cell aggregation — chains 467 · clumps 255 · none 24. Discarded: polar-lipid profiles (172 analytes over 143 species, 64 of them prose fragments), yeast/*E. coli* lysis (1,207 strain records but 6 species), one-off observations. |
+| `compound_class` | `Produces_` | 14 | From 1,887 raw analytes. steroid transformation 15 · siderophore 12 · antibiotic (unspecified) 11 · ethanol 11 · polyhydroxyalkanoate 11 · vitamin B12 10 · carotenoid 8 · pigment 8 · bacteriocin 6 · exopolysaccharide 4 · biosurfactant 3 · butanediol 3 · propanediol 3 · methanol 1. **Acetoin deliberately excluded** here — it is already covered by `Prod_acetoin` and `Test_voges-proskauer-test`. Enzyme-like entries needed no rehoming: β-lactamase, amylase, catalase, urease, protease, nitrate reductase, cellulase, chitinase and lipase were already in `Enzyme_`. |
+| `tolerance` | `Tolerance_` | 3 | lysozyme 30 · tellurite 26 · bile 5. From 27 analytes, 70% single-species heavy metals and selective agents. |
 
 ### Kept as-is
 
-`murein` (89 sets, largest 108) — peptidoglycan type is a comparable
+`murein` (89 sets, largest 128) — peptidoglycan type is a comparable
 chemotaxonomic property genuinely shared across taxa, not a one-off observation.
-`nutrition_type` (13 sets) — chemoorganotroph, chemoheterotroph, methylotroph: a
+`nutrition_type` (14 sets) — chemoorganotroph, chemoheterotroph, methylotroph: a
 small controlled vocabulary of comparable metabolic strategies.
 
 ## Limitations to keep in mind
 
-**BacDive is silent for some key taxa.** 2,890 of 8,935 species (32%) have **no
-oxygen tolerance record at all** — including *Faecalibacterium prausnitzii*,
-*Roseburia intestinalis* and *Ruminococcus bromii*, across every harvested strain.
-This is a hard ceiling, and it is why v7's `BacDive_anaerobe` membership for those
-species could only have come from the retired GPT table.
+**BacDive is silent for some key taxa.** 3,232 of 9,642 species with any call
+(34%) have **no oxygen tolerance record at all** — including *Faecalibacterium
+prausnitzii* and *Roseburia intestinalis*, across every harvested strain —
+and *Ruminococcus bromii* is absent from the harvest altogether. This is a hard
+ceiling, and it is why the original `BacDive_anaerobe` membership for those
+species could only have come from the retired LLM-derived table.
+
+**Reclassified taxa need the second pass.** *Agathobacter rectalis*,
+*Mediterraneibacter gnavus*, *Enterocloster bolteae* and *Phocaeicola vulgatus* are
+reached only because `01b_resolve_synonyms.R` finds their current genus and that
+genus is then queried. The gold standard asserts two of them so a regression is
+caught.
 
 **Everything here is lab-measured.** Zero `confidence` fields and no
-`Genome-based predictions` section appear in the 11.3M-row harvest, because
-`BacDive::fetch()` does not pass the API's `predictions` parameter. A clean claim
-for the paper, and an untapped coverage lever.
+`Genome-based predictions` section appear in the 11.6M-row harvest, because
+`BacDive::fetch()` does not pass the API's `predictions` parameter. An untapped
+coverage lever.
 
 **Use the evidence columns.** `median_n_tested` / `max_n_tested` say how many
 strains stand behind a call; a median of 1 rests on single strains. Annotation
 depth is very uneven — see `output/05_annotation_depth.csv`.
 
-**Testing burden.** On HMP_2019_ibdmdb (1,201 IBD vs 426 controls, 288 observed
-taxa): **389 of 5,268 sets reach testing** at `min_set_size = 3`, against 121 of
-267 for v7. 65 are significant at FDR < 0.05, a 16.5% hit rate — down from 39%
-before the API code panels were dropped, but still elevated because `util` sets are
-correlated with one another. `output/05_redundant_sets.csv` lists 126 set pairs
-above Jaccard 0.9 if you want to prune further.
+**Correlated sets.** Substrate sets are correlated with one another (a species
+that ferments glucose often ferments mannose), so enrichment hits within `Uses_`
+are not independent. `output/05_redundant_sets.csv` lists the 41 set pairs above
+Jaccard 0.9 if you want to prune further.
 
 **A documented divergence, not a failure.** BacDive records *Veillonella parvula*
 as `oval-shaped` → canonicalised to `ovoid`, while the literature describes it as a
 Gram-negative anaerobic coccus. The gold standard follows the source and asserts
 `Shape_ovoid` plus the `Shape_coccoid` union, rather than overriding the data —
 maintaining species-level overrides would let the validation set define the
-database. Gold standard: **36 pass, 0 fail**, 3 no-data, 2 not-covered.
+database. Gold standard: **38 pass, 0 fail**, 3 no-data, 2 not-covered.
