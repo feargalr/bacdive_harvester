@@ -16,7 +16,7 @@
 ##   2. replaces every existing BacDive_* set and keeps every other source;
 ##   3. extends NCBI_ids ADD-ONLY with species name -> taxid pairs from the
 ##      harvest, plus former names resolved by 01b, in both "Genus species" and
-##      "Genus_species" forms. Existing taxids are never overwritten, so a name
+##      "Genus_species" forms, plus each shipped taxid as its own name. Existing taxids are never overwritten, so a name
 ##      that maps today maps the same way afterwards; disagreements are reported
 ##      instead. Names present with no taxid (dead ends) are filled;
 ##   4. writes a per-set provenance table and a build record.
@@ -106,6 +106,11 @@ pairs <- pairs[grepl("^[A-Z][a-z]+ [a-z][a-z-]+$", pairs$name), , drop = FALSE]
 underscored <- pairs
 underscored$name <- gsub(" ", "_", underscored$name)
 pairs <- unique(rbind(pairs, underscored))
+## And the taxid itself. TaxSEA looks every input up by NAME in NCBI_ids, so a
+## user supplying NCBI taxids reaches a set member only if that id is also
+## present as its own name ("820" = "820"), as it is for existing members.
+pairs <- rbind(pairs, data.frame(name = shipped_tx, taxid = shipped_tx,
+                                 source = "taxid", stringsAsFactors = FALSE))
 
 ## A name the harvest itself maps to more than one taxid is ambiguous: skip it.
 n_ids <- tapply(pairs$taxid, pairs$name, function(z) length(unique(z)))
@@ -128,17 +133,24 @@ conflicts$existing_taxid <- vapply(existing[in_lookup & !empty & !agrees],
 additions <- pairs[!in_lookup | empty, , drop = FALSE]
 additions$action <- ifelse(additions$name %in% names(NCBI_ids), "filled empty entry", "added")
 
-reach_before <- mean(shipped_tx %in% as.character(unlist(NCBI_ids)))
+ids_before <- NCBI_ids
+reach_before <- mean(shipped_tx %in% names(NCBI_ids))
 fill <- additions[additions$action != "added", , drop = FALSE]
 for (i in seq_len(nrow(fill))) NCBI_ids[[fill$name[i]]] <- fill$taxid[i]
 add <- additions[additions$action == "added", , drop = FALSE]
 NCBI_ids <- c(NCBI_ids, stats::setNames(as.list(add$taxid), add$name))
-reach_after <- mean(shipped_tx %in% as.character(unlist(NCBI_ids)))
+reach_after <- mean(shipped_tx %in% names(NCBI_ids))
 log_msg(sprintf("NCBI_ids: +%d names, %d empty entries filled (%d from former names); %d conflicts left untouched; %d ambiguous skipped",
                 nrow(add), nrow(fill), sum(additions$source == "former name"),
                 nrow(conflicts), length(ambiguous)))
-log_msg(sprintf("shipped BacDive taxa reachable by name: %.0f%% -> %.0f%%",
-                100 * reach_before, 100 * reach_after))
+named <- function(ids) {
+  keep <- lengths(ids) > 0L & !grepl("^[0-9]+$", names(ids))
+  as.character(unlist(ids[keep]))
+}
+log_msg(sprintf("shipped BacDive taxa reachable by taxid: %.0f%% -> %.0f%%; by species name: %.0f%% -> %.0f%%",
+                100 * reach_before, 100 * reach_after,
+                100 * mean(shipped_tx %in% named(ids_before)),
+                100 * mean(shipped_tx %in% named(NCBI_ids))))
 
 ## ---- 4. provenance -------------------------------------------------------------
 

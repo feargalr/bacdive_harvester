@@ -204,14 +204,16 @@ ok("stale BacDive sets are removed", !("BacDive_Utilizes_nitrate" %in% names(e6$
 ok("new BacDive sets are added", "BacDive_Oxygen_anaerobe" %in% names(e6$TaxSEA_db))
 ok("NCBI_ids gains harvested names in both spellings",
    all(c("Faecalibacterium prausnitzii", "Faecalibacterium_prausnitzii") %in% names(e6$NCBI_ids)))
+ok("each shipped taxid is added as its own name, for users who supply taxids",
+   identical(e6$NCBI_ids[["853"]], "853"))
 ok("an existing name with no taxid is filled",
    identical(e6$NCBI_ids[["Faecalibacterium_prausnitzii"]], "853") &&
      sum(names(e6$NCBI_ids) == "Faecalibacterium_prausnitzii") == 1L)
 ok("an existing NCBI_ids entry is never overwritten",
    identical(e6$NCBI_ids[["Bacteroides uniformis"]], "999999"))
 ad <- utils::read.delim(file.path(out, "NCBI_ids_additions.tsv"), stringsAsFactors = FALSE)
-ok("only binomials are added (no 'sp.', no subspecies)",
-   nrow(ad) > 0L && all(grepl("^[A-Z][a-z]+[ _][a-z][a-z-]+$", ad$name)))
+ok("only binomials and taxids are added (no 'sp.', no subspecies)",
+   nrow(ad) > 0L && all(grepl("^([A-Z][a-z]+[ _][a-z][a-z-]+|[0-9]+)$", ad$name)))
 cf <- utils::read.delim(file.path(out, "NCBI_ids_conflicts.tsv"), stringsAsFactors = FALSE)
 ok("...and the disagreement is reported", "Bacteroides uniformis" %in% cf$name)
 bi <- utils::read.delim(file.path(out, "BacDive_build_info.tsv"), stringsAsFactors = FALSE)

@@ -104,12 +104,13 @@ What it does:
 - replaces every `BacDive_*` set and keeps every other source unchanged, refusing
   to run if a new name would collide with an existing one;
 - extends `NCBI_ids` with the species names behind the shipped sets, plus former
-  names resolved by `01b`, in both `Genus species` and `Genus_species` forms.
-  Binomials only. **An existing taxid is never overwritten**: a name that maps
+  names resolved by `01b`, in both `Genus species` and `Genus_species` forms
+  (binomials only), and each shipped taxid as its own name so users supplying
+  taxids reach every member. **An existing taxid is never overwritten**: a name that maps
   today maps the same way afterwards, and disagreements are written to
   `NCBI_ids_conflicts.tsv` instead. A name already present with no taxid is a dead
   end in TaxSEA, so that is filled. In the reference build this took the share of
-  shipped taxa reachable by name from 15% to 96%;
+  shipped taxa reachable by species name from 15% to 96%, and by taxid to 100%;
 - writes `BacDive_set_provenance.tsv` (per set: family, evidence, strain and
   species counts) and `BacDive_build_info.tsv` (harvester commit, BacDive client
   version, harvest dates, counts) for the package to carry.
