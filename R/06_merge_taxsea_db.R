@@ -166,7 +166,7 @@ if (!nzchar(commit)) {
 build <- data.frame(
   key = c("harvester", "harvester_commit", "bacdive_r_package",
           "harvest_first_date", "harvest_last_date", "genera_queried",
-          "strain_records", "species_with_calls", "sets_built",
+          "strain_records", "species_harvested", "sets_built",
           "sets_shipped", "ship_min_members", "taxa_in_shipped_sets",
           "ncbi_ids_added", "built_on"),
   value = c("https://github.com/feargalr/bacdive_harvester", commit,
