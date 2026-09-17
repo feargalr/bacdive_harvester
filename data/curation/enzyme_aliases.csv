@@ -1,0 +1,15 @@
+raw,canonical,rationale
+esterase lipase (C 8),esterase lipase,"Chain-length suffix is an assay detail. v7 shipped ""esterase lipase (C 8)"" (184 species) and ""esterase Lipase (C 8)"" (8) as two sets on case alone; case is now collapsed dataset-wide, and this row folds in the API zym spelling ""Esterase Lipase""."
+esterase (C 4),esterase,"Chain-length suffix is an assay detail, not a different enzyme."
+lipase (C 14),lipase,As above.
+oxidase,cytochrome c oxidase,"v7 shipped oxidase (48), cytochrome oxidase (20) and cytochrome-c oxidase (27) as three sets for one assay."
+cytochrome oxidase,cytochrome c oxidase,As above.
+cytochrome-c oxidase,cytochrome c oxidase,As above.
+leucine aminopeptidase,leucine arylamidase,Same API assay under a different nomenclature; v7 had 255 vs 1.
+valine aminopeptidase,valine arylamidase,Same assay; v7 had 66 vs 1.
+cystine aminopeptidase,cystine arylamidase,Same assay; v7 had 40 vs 1.
+arginine arylamidase,L-arginine arylamidase,Same assay; v7 had 4 vs 68.
+arginine deshydrolase,arginine dihydrolase,Spelling variant.
+gelatin hydrolysis,gelatinase,Assay name vs enzyme name for the same readout.
+casein hydrolysis,caseinase,As above.
+deoxyribonuclease,DNase,Full name vs abbreviation.

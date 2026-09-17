@@ -1,0 +1,27 @@
+raw,canonical,rationale
+carbon source,,"COLLAPSED into the base Uses_X set. Growth, assimilation, utilisation, degradation and oxidation all answer 'can this organism use substrate X', and exposing each as its own TaxSEA feature multiplies the feature space without adding a distinct biological hypothesis. The raw context is retained in the context_raw column of the trait table and the review exports so this can be revisited."
+energy source,,As above.
+growth,,As above.
+assimilation,,As above.
+degradation,,As above.
+oxidation,,As above.
+utilization,,As above.
+<none>,,Missing or absent context; treated as plain utilisation.
+required for growth,,"Collapsed: 97 entries, and 'required for growth' is a stronger form of the same claim."
+aerobic catabolization,,"Collapsed: 48 entries, too sparse to form a testable set."
+anaerobic catabolization,,"Collapsed: 18 entries."
+aerobic growth,,"Collapsed: 121 entries. Aerobic/anaerobic growth on a substrate would be worth separating, but at this population it cannot support its own sets."
+anaerobic growth,,"Collapsed: 33 entries."
+electron donor,,"Collapsed: 110 entries."
+electron acceptor,,"Collapsed: 108 entries."
+sulfur source,,"Collapsed: 8 entries."
+builds base from,,"Collapsed: 62 entries. Alkalinisation is not utilisation, but it is far too sparse to ship."
+other,,Uninformative context label.
+fermentation,fermentation,"KEPT SEPARATE (66,435 entries). Mechanistically distinct from aerobic utilisation and particularly relevant in gut ecology."
+builds acid from,acid,"KEPT SEPARATE (381,130 entries, the largest context in BacDive). Acid production from a substrate is a distinct standardised readout, well populated enough to support its own sets."
+builds gas from,gas,"KEPT SEPARATE (1,742 entries). Gas production is a distinct readout -- gas from nitrate is denitrification, gas from glucose is mixed-acid fermentation. v7 folded this into plain nitrate utilisation."
+builds gas from nitrate,gas,As above.
+hydrolysis,hydrolysis,"KEPT SEPARATE (64,992 entries). Hydrolysis of esculin, gelatin or starch is an enzymatic activity rather than growth on the substrate."
+reduction,reduction,"KEPT SEPARATE (25,959 entries). Nitrate/nitrite reduction is a distinct respiratory trait."
+respiration,respiration,"KEPT SEPARATE (5,547 entries). The mechanistic complement of fermentation."
+nitrogen source,Nsource,"KEPT SEPARATE (1,374 entries). Using a compound as a nitrogen source is a different assay from using it as a carbon source. Modest population -- a candidate for collapsing if you would rather have fewer features."

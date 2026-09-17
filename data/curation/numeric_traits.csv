@@ -1,0 +1,7 @@
+family,stat,relations,thresholds,threshold_fmt,unit,notes
+halophily,max,growth|maximum,2|5|10|15|20,growth_ge_%gpct_NaCl,%,"Highest NaCl % (w/v) supporting growth. 633 distinct raw concentration strings collapse to these."
+culture_temp,max,growth|maximum,45|55|65|80,growth_ge_%gC,C,"Highest temperature supporting growth. 767 distinct values over 189k rows -- the largest field in the database."
+culture_temp_min,min,growth|minimum,,,C,"Lowest temperature supporting growth; drives the psychrophile/psychrotolerant classes."
+culture_ph_max,max,growth|maximum,9|10,growth_ge_pH%g,pH,Highest pH supporting growth.
+culture_ph_min,min,growth|minimum,,,pH,Lowest pH supporting growth.
+gc_content,median,,,,%,"Measured GC content; no growth test, so the per-species median across strains is binned."

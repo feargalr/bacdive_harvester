@@ -1,0 +1,16 @@
+family,lower,upper,label,notes
+halophily,0,2,non-halophile,Kushner classification applied to maximum NaCl supporting growth.
+halophily,2,5,halotolerant,
+halophily,5,10,slight halophile,
+halophily,10,20,moderate halophile,
+halophily,20,1000,extreme halophile,
+culture_temp,0,20,psychrophile,Applied to the maximum temperature supporting growth.
+culture_temp,20,45,mesophile,
+culture_temp,45,80,thermophile,
+culture_temp,80,200,hyperthermophile,
+culture_temp_min,-20,10,psychrotolerant,Grows at or below 10 C.
+culture_ph_max,9,20,alkaliphile,Grows at pH 9 or above.
+culture_ph_min,0,5.5,acidophile,Grows at pH 5.5 or below.
+gc_content,0,40,GC_low,GC content below 40%.
+gc_content,40,60,GC_mid,
+gc_content,60,100,GC_high,

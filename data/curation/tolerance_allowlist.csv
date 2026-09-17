@@ -1,0 +1,5 @@
+raw,canonical,match,rationale
+^bile$,bile tolerance,regex,"Bile tolerance is directly gut-relevant. Only 3 species, but it is a genuinely comparable property rather than an idiosyncratic observation."
+^oxgall$,bile tolerance,regex,Oxgall is bile; same trait.
+^lysozyme$,lysozyme tolerance,regex,"30 species. Host antimicrobial resistance, comparable across taxa."
+^tellurite$,tellurite tolerance,regex,8 species; a standard selective-agent tolerance.

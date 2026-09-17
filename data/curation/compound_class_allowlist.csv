@@ -1,0 +1,37 @@
+raw,canonical,rationale
+ethanol,ethanol,Fermentative solvent production.
+methanol,methanol,
+"2, 3 butanediol",butanediol,23-butanediol fermentation.
+"1, 3 propanediol",propanediol,
+polyhydroxyalkanoic acids,polyhydroxyalkanoate,Carbon storage polymer; a real functional trait.
+poly-beta-hydroxyalkanoates,polyhydroxyalkanoate,
+siderophore,siderophore,Iron acquisition; directly relevant to host-microbe competition.
+siderophore acinetobactin,siderophore,
+ferrioxamine E,siderophore,A named siderophore; collapsed into the class.
+ferrioxamine A-G (piloquinone),siderophore,
+bacteriocin,bacteriocin,Interbacterial antagonism; relevant to community structure.
+autobacteriocin,bacteriocin,
+bacteriocin plantaricin S,bacteriocin,
+nisin,bacteriocin,
+vitamin B12,vitamin B12,B12 provision is a documented cross-feeding trait.
+cobalamine,vitamin B12,Synonym of vitamin B12.
+exopolysaccharide,exopolysaccharide,Biofilm and mucosal adhesion.
+palladium-exopolysaccharide,exopolysaccharide,
+xanthan,exopolysaccharide,
+surfactant,biosurfactant,
+biosurfactant,biosurfactant,
+carotenoids,carotenoid,
+carotenoid,carotenoid,
+carotenoid phlei-xanthophyll,carotenoid,
+prodigiosine,pigment,"Named pigments collapsed to a class; individually they are single-species sets."
+undecylprodigiosine,pigment,
+violacein,pigment,
+black pigment,pigment,
+pigment,pigment,
+Antibiotic agent,antibiotic (unspecified),"Generic annotation, 10 species. Kept as a broad class; named one-off antibiotics are dropped."
+antibiotics,antibiotic (unspecified),
+Antimicrobial activity,antibiotic (unspecified),
+steroids,steroid transformation,"13 species. Steroid/bile-acid transformation is gut-relevant."
+16-alpha-hydroxylated steroids,steroid transformation,
+"16-alpha-hydroxylated, steroids",steroid transformation,
+16-alpha-substituted steroid,steroid transformation,

@@ -1,0 +1,10 @@
+# Copy this file to .Renviron, fill in your credentials, and restart R.
+# .Renviron is gitignored and must never be committed.
+#
+# Register for BacDive API access at https://api.bacdive.dsmz.de
+BACDIVE_USER=you@example.org
+BACDIVE_PASSWORD=
+
+# Optional. An NCBI API key raises the E-utilities rate limit from 3 to 10
+# requests/second for R/01b_resolve_synonyms.R. Not required.
+# NCBI_API_KEY=
